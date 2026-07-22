@@ -87,4 +87,10 @@ TC011 - COMPLETAR COMPRA SIN SELECCIONAR PRODUCTOS
     Inicio de sesion
     Eliminar productos del carrito de compras
     Completar compra
-    
+
+TC012 - VALIDACION CAMBIOS EN GIT DEL ARCHIVO REGRESIVO
+    [Tags]    TC012
+    Abrir Navegador
+    Inicio de sesion
+    Eliminar productos del carrito de compras
+    #Validacion git push y git pull

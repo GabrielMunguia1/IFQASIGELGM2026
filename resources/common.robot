@@ -53,3 +53,5 @@ Eliminar productos del carrito de compras
     Wait Until Page Contains Element    //a[text()='Home ']    30s
     Click Element    //a[text()='Home ']
 
+KEYWORD PRUEBA CLASE GIT SEMANA 10
+    Click Button    locator=XPATH
