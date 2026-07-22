@@ -1,0 +1,4 @@
+--outputdir
+results
+--prerunmodifier
+resources.modifiers.expandir_excel.ExpandirCasosExcel
