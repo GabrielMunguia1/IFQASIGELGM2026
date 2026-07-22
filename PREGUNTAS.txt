@@ -1,0 +1,46 @@
+1. ¿Cuál fue el escenario más difícil de automatizar y por qué?
+
+	El escenario que mas se me dificulto fue el 14, debido a las diferentes 	validaciones
+
+2. ¿Qué ventajas ofrece utilizar keywords reutilizables?
+
+	Una mayor flexibilidad al momento de realizar nuevos casos, ofrece una 	gran ventaja de reducir la duplicación de código y facilitar el 	mantenimiento en las automatizaciones. Permite crear nuevos casos de 	una forma mas rápida, ya que los mismos keywords pueden reutilizarse 	cuando existen pasos en común. 
+	
+3. ¿Qué diferencia existe entre utilizar `Sleep` y una espera explícita?
+
+	Un sleep detiene directamente la reproducción del test case y una 	espera explicita espera solo hasta que se cumpla una condición.
+
+
+4. ¿Qué localizadores fueron más estables durante la automatización?
+
+	fueron 
+	
+		data-react-toolbox
+		normalize-space()
+		data-react-toolbox
+
+
+
+5. ¿Qué validaciones se utilizaron para comprobar que las acciones fueron exitosas?
+
+	Location Should Be
+	Location Should Contain
+	Wait Until Element Is Visible
+	Page Should Contain Element
+	Should Not Be Empty
+
+	
+
+6. ¿Qué sucedió al intentar ingresar un rango de fechas incorrecto?
+
+	Que al momento de ingresar una fecha anterior automáticamente colocaba 	el día en que se encuentra y el día posterior.
+
+
+7. ¿Cómo podría aplicarse un enfoque basado en datos para probar diferentes usuarios, fechas y cantidades de pasajeros?
+	
+	Se puede guardar datos en el excel con diferentes combinaciones, el 	mismo caso de prueba se ejecutaría varias veces, pero tomando datos 	distintos
+
+8. ¿Qué cambios realizaría para que las pruebas puedan ejecutarse en diferentes navegadores?
+
+	En el excel, solo se cambiaria de chrome (el que yo utilice) a otro 	como Brave, Opera, etc. Debido a que la variable se coloca en el 	keyword y con lo que tenga en el excel eso utilizara.
+	
