@@ -93,3 +93,10 @@ TC015 - Completar Flujo principal
     Validar Informacion Del Viaje
     Continuar Con Reservacion
     Validar El Resultado Final
+
+TC016 - Completar Flujo principal
+    [Tags]    TC016
+    Validar Carga De La Pagina
+    Iniciar Sesion
+    Validar Saludo Al Usuario
+    Seleccionar fecha
