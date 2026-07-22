@@ -783,3 +783,38 @@ Validar EL Resultado Final
 
     CapturaImagenSinComentarios
 
+
+
+#USO DE RAMAS EN GITHUB
+#TAREA SEMANA 11
+Validar Resultado 
+    # La aplicación demo no muestra una confirmación posterior
+    Location Should Contain    /checkout
+
+    # Validar que seguimos en Checkout
+    Wait Until Element Is Visible    //h2[normalize-space()='Checkout']    30s
+    Page Should Contain Element    //h2[normalize-space()='Checkout']
+
+    # Validar que el resumen sigue visible
+    Wait Until Element Is Visible    //*[normalize-space()='Order Summary']    30s
+    Page Should Contain Element    //*[normalize-space()='Order Summary']
+
+    # Validar precio final
+    Wait Until Element Is Visible    //div[contains(@class,'OrderSummary__price')]    30s
+    ${precio_final}=    Get Text    //div[contains(@class,'OrderSummary__price')]
+
+    Should Not Be Empty    ${precio_final}
+    Should Contain    ${precio_final}    $
+
+    # Validar que Pay now continúa visible
+    Wait Until Element Is Visible
+    ...    //button[translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='pay now']
+    ...    30s
+
+    Page Should Contain Element
+    ...    //button[translate(normalize-space(.),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='pay now']
+
+    Log    Precio final mostrado: ${precio_final}
+    Log    La aplicación demo permanece en Checkout porque no implementa una confirmación posterior al pago.
+
+    CapturaImagenSinComentarios
