@@ -94,3 +94,4 @@ TC012 - VALIDACION CAMBIOS EN GIT DEL ARCHIVO REGRESIVO
     Inicio de sesion
     Eliminar productos del carrito de compras
     #Validacion git push y git pull
+    #Prueba de nueva rama en repositorio

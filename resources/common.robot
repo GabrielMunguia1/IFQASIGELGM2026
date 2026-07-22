@@ -55,3 +55,10 @@ Eliminar productos del carrito de compras
 
 KEYWORD PRUEBA CLASE GIT SEMANA 10
     Click Button    locator=XPATH
+    Click Button    locator=XPATH
+    Click Button    locator=XPATH
+    Click Button    locator=XPATH
+    Click Button    locator=XPATH
+    Click Button    locator=XPATH
+    Click Button    locator=XPATH
+    Click Button    locator=XPATH
