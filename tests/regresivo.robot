@@ -13,85 +13,115 @@ ${hoja}
 
 *** Test Cases ***
 
-TC001 - REGISTRO USUARIO
+TC001 Validar carga pagina principal
     [Tags]    TC001
-    Open Browser    ${URL}    chrome
-    Maximize Browser Window
-    Wait Until Keyword Succeeds    30s    1s    Validar Root Principal
+    Abrir Navegador
+    Validar Pagina Principal
+    Cerrar Navegador
 
-Validar Root Principal
-${existe}=    Execute JavaScript
-...    const app = document.querySelector('shop-app');
-...    return app !== null && app.shadowRoot !== null;
-Should Be True    ${existe}
 
-TC002 - INCIO DE SESION EXITOSO
+TC002 Validar elementos formulario busqueda
     [Tags]    TC002
     Abrir Navegador
-    Inicio de sesion
+    Validar Formulario Busqueda
+    Cerrar Navegador
 
-TC003 - INICIO DE SESION NO EXITOSO
+
+TC003 Iniciar sesion con credenciales
     [Tags]    TC003
     Abrir Navegador
-    Inicio de sesion no valido
+    Inicio de Sesion Exitoso
+    Cerrar Navegador
 
-TC004 - ENVIO INFORMACION DE CONTACTO
+
+TC004 Validar saludo despues login
     [Tags]    TC004
     Abrir Navegador
-    Envio informacion de contacto
+    Inicio de Sesion Exitoso
+    Validar Saludo Usuario
+    Cerrar Navegador
 
-TC005 - AGREGAR PRODUCTOS AL CARRITO CON LOGIN CUENTA EXISTENTE
+
+TC005 Cerrar formulario login
     [Tags]    TC005
     Abrir Navegador
-    Inicio de sesion
-    Eliminar productos del carrito de compras
-    Agregar productos al carrito
+    Cerrar Formulario Login
+    Cerrar Navegador
 
-TC006 - COMPLETAR COMPRA CUENTA EXISTENTE
+
+TC006 Seleccionar fecha salida
     [Tags]    TC006
     Abrir Navegador
-    Inicio de sesion
-    Eliminar productos del carrito de compras
-    Agregar productos al carrito
-    Completar compra
+    Seleccionar Fecha Salida
+    Validar Fecha Salida
+    Cerrar Navegador
 
-TC007 - VALIDACION DE PRODUCTOS DISPONIBLES
+
+TC007 Seleccionar fecha regreso
     [Tags]    TC007
     Abrir Navegador
-    Inicio de sesion
-    Verificacion de productos disponibles
+    Seleccionar Fecha Salida
+    Seleccionar Fecha Regreso
+    Validar Fecha Regreso
+    Cerrar Navegador
 
-TC008 - COMPLETAR COMPRA SIN LOGIN DE CUENTA
+
+TC008 Validar rango incorrecto
     [Tags]    TC008
     Abrir Navegador
-    Agregar productos al carrito
-    Completar compra
+    Validar Rango Incorrecto
+    Cerrar Navegador
 
-TC009 - ELIMINAR PRODUCTO CLIENTE EXISTENTE
+
+TC009 Cambiar cantidad adultos
     [Tags]    TC009
     Abrir Navegador
-    Inicio de sesion
-    Eliminar productos del carrito de compras
+    Cambiar Cantidad Adultos
+    Cerrar Navegador
 
-TC010 - COMPRA COMPLETA DE UN MISMO PRODUCTO
+
+TC010 Validar limites pasajeros
     [Tags]    TC010
     Abrir Navegador
-    Inicio de sesion
-    Eliminar productos del carrito de compras
-    Agregar productos al carrito
-    Completar compra
+    Validar Limites Pasajeros
+    Cerrar Navegador
 
-TC011 - COMPLETAR COMPRA SIN SELECCIONAR PRODUCTOS
+
+TC011 Buscar viajes validos
     [Tags]    TC011
     Abrir Navegador
-    Inicio de sesion
-    Eliminar productos del carrito de compras
-    Completar compra
+    Buscar Viajes Validos
+    Validar Resultados Busqueda
+    Cerrar Navegador
 
-TC012 - VALIDACION CAMBIOS EN GIT DEL ARCHIVO REGRESIVO
+
+TC012 Validar resultados busqueda
     [Tags]    TC012
     Abrir Navegador
-    Inicio de sesion
-    Eliminar productos del carrito de compras
-    #Validacion git push y git pull
-    #Prueba de nueva rama en repositorio
+    Buscar Viajes Validos
+    Validar Resultados Busqueda
+    Cerrar Navegador
+
+
+TC013 Seleccionar destino
+    [Tags]    TC013
+    Abrir Navegador
+    Buscar Viajes Validos
+    Seleccionar Destino
+    Cerrar Navegador
+
+
+TC014 Validar informacion destino
+    [Tags]    TC014
+    Abrir Navegador
+    Buscar Viajes Validos
+    Seleccionar Destino
+    Validar Informacion Destino
+    Cerrar Navegador
+
+
+TC015 Flujo principal reservacion
+    [Tags]    TC015
+    Abrir Navegador
+    Flujo Completo Reservacion
+    Cerrar Navegador
