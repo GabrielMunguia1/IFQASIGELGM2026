@@ -1,6 +1,5 @@
-```robot
 *** Settings ***
-Library     ControldeVariablesLibrary
+#Library     ControldeVariablesLibrary
 Library     SeleniumLibrary
 Library     OperatingSystem
 Library     BuiltIn
@@ -17,13 +16,18 @@ ${openBrowser}                 ${True}
 ${timeoutDefecto}              30s
 ${contadorMaximo}              24
 ${maxCaracteres}               103
+${maxToSearch}                 10
+${la}                          10x
+${lt}                          3sP
+${IniciarValidacionClienteNuevo}    True
+${contadorPestaniaCasos}       ${1}
 
 
 # ============================================================
 # CONFIGURACIÓN PARA LA GENERACIÓN DE EVIDENCIAS
 # ============================================================
 
-${savebyTest}                  True
+${savebyTest}                  False
 ${savePDF}                     True
 ${borrarHTML}                  True
 ${removeScreenImages}          False
@@ -33,15 +37,15 @@ ${lenguajeSistema}             ${EMPTY}
 ${nombreDocEvidencia}          ${EMPTY}
 
 ${proyecto}                    Proyecto de aprendizaje
-${titulo}                      Evidencias de pruebas automatizadas
-${subTitulo}                   Ejecución de prueba
+${titulo}                      Evidencias qa
+${subTitulo}                   Activacion: DEMO DE PRUEBA IF 2026
 
 ${rutaLog}                     ${LOG FILE}
 ${rutaReporte}                 ${REPORT FILE}
 ${rutaArchivoBase}             Encabezado${/}encabezado.html
 ${formatoFecha}                _%y%m%d-%H%M%S
 
-${textoEncabezado}             Evidencia de pruebas
+${textoEncabezado}             Evidencia de Pruebas
 ${pathLogo}                    Resource${/}Logo${/}Logo.png
 ${autor}                       Estudiante
 ${colorFooter}                 gray
@@ -64,9 +68,9 @@ ${subtituloPDF}                <center><h2><b><font color\="black">${subTitulo}<
 
 ${descripcionPDF}              <section>
 ...                            <p>
-...                            Proyecto: ${proyecto}
+...                            País: {pa}
 ...                            &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
-...                            Hoja de datos: {ho}
+...                            Hoja (Excel): {ho}
 ...                            &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;
 ...                            Fecha: {fe}
 ...                            </p>
@@ -155,4 +159,3 @@ ${resultBody}                  <h4 align\="left">
 ${colorFail}                   red
 ${colorPass}                   \#00A000
 ${tmpFunct}                    0
-

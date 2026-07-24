@@ -1288,38 +1288,91 @@ class ControldeVariablesLibrary:
     
     def convert_html_to_pdf(self, var_header, array_body, pdf_file):
         try:
-            
-            #array_body = BuiltIn().get_variable_value('${bodyHTML2}')
             outputdir = built_in.get_variable_value('${OUTPUTDIR}')
             slash = built_in.get_variable_value('${/}')
             if self.apply_pabot:
                 if str(outputdir).endswith(slash):
-                    console('.',newline=False)
-                    outputdir = outputdir +'..' + slash + '..' + slash
+                    outputdir = outputdir + '..' + slash + '..' + slash
                 else:
-                    console('..',newline=False)
                     outputdir = outputdir + slash + '..' + slash + '..' + slash
             print(f'pdf file name: {pdf_file}')
             pdf = PDF(orientation="P", unit="mm",)
-            #pdf = FPDF()
             pdf.set_font("helvetica", size=10)
-            pdf.set_text_color(255)
+            pdf.set_text_color(0)
             pdf.set_left_margin(22)
             pdf.set_right_margin(22)
             pdf.add_page()
-            pdf.write_html(var_header)
+
+        # ── Encabezado de portada ──────────────────────────────
+            now = __import__('datetime').datetime.now()
+            var_titulo = built_in.get_variable_value('${titulo}')
+            var_subtitulo = built_in.get_variable_value('${subTitulo}')
+            var_hoja = built_in.get_variable_value('${hoja}')
+            var_pais = built_in.get_variable_value('${pais}') or ''
+            var_fecha = now.strftime("%A, %d-%B-%Y")
+
+            pdf.set_font("helvetica", "B", 20)
+            pdf.cell(w=0, txt=var_titulo, align="C", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(4)
+            pdf.set_font("helvetica", "B", 14)
+            pdf.cell(w=0, txt=var_subtitulo, align="C", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(8)
+            pdf.set_font("helvetica", size=10)
+            pdf.cell(w=0, txt=f"País: {var_pais}   -   Hoja (Excel): {var_hoja}   -   Fecha: {var_fecha}", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(10)
+
+        # ── Tabla resumen nativa ───────────────────────────────
+            var_tcs_summary = built_in.get_variable_value('${tablaResumenBodyPDF}')
+            pdf.set_font("helvetica", "B", 11)
+            pdf.cell(w=0, txt="Resumen", align="C", new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(4)
+
+            col_w = [15, 65, 45, 45]
+            headers = ["#", "Test", "Tiempo", "Estatus"]
+            pdf.set_font("helvetica", "B", 10)
+            x_start = pdf.get_x()
+            for i, h in enumerate(headers):
+                pdf.cell(w=col_w[i], txt=h, align="C")
+            pdf.ln()
+            pdf.line(x_start, pdf.get_y(), x_start + sum(col_w), pdf.get_y())
+            pdf.ln(1)
+
+        # Parsear filas del resumen desde tablaResumenBodyPDF
+            import re as _re
+            pdf.set_font("helvetica", size=10)
+            if var_tcs_summary:
+                rows = _re.findall(
+                    r'<td[^>]*>(.*?)</td>',
+                    var_tcs_summary.replace('\n',''),
+                    _re.DOTALL
+                )
+            # Cada 4 celdas = 1 fila
+                for i in range(0, len(rows), 4):
+                    chunk = rows[i:i+4]
+                    if len(chunk) == 4:
+                        no = _re.sub(r'<[^>]+>', '', chunk[0]).strip()
+                        tc = _re.sub(r'<[^>]+>', '', chunk[1]).strip()
+                        ti = _re.sub(r'<[^>]+>', '', chunk[2]).strip()
+                        st = _re.sub(r'<[^>]+>', '', chunk[3]).strip()
+                        color = (0, 160, 0) if st == 'PASS' else (255, 0, 0)
+                        pdf.cell(w=col_w[0], txt=no, align="C")
+                        pdf.cell(w=col_w[1], txt=tc, align="C")
+                        pdf.cell(w=col_w[2], txt=ti, align="C")
+                        pdf.set_text_color(*color)
+                        pdf.cell(w=col_w[3], txt=st, align="C")
+                        pdf.set_text_color(0)
+                        pdf.ln()
+
+        # ── Páginas de evidencia ───────────────────────────────
             for test_executed in array_body:
-                var_body_html = ""
                 var_body_html = test_executed['Titulo'] + test_executed['Body'] + test_executed['Resultado']
                 pdf.add_page()
                 pdf.write_html(var_body_html)
+
             if len(pdf_file) <= 0:
-                pdf_file="Evidencia"
-                print(f'Nombre del pdf: {pdf_file}')
+                df_file = "Evidencia"
             path = os.path.join(outputdir, pdf_file)
-            #print(f'path del PDF generado: {path}')
             pdf.output(path)
-            #self.show_file_in_log_html(pdf_file,'Ver la evidencia generada en formato PDF.',1)
         except Exception as exception:
             print(f"convert_html_to_pdf() had next error: {exception}")
     
