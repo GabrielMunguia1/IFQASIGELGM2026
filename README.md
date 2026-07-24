@@ -1,64 +1,97 @@
-# Proyecto base de automatizacion con Robot Framework
+# Automatización del flujo de reservas de Space & Beyond
 
-Plantilla para pruebas automatizadas con Robot Framework, SeleniumLibrary,
-datos desde Excel y evidencia individual en HTML/PDF.
+Suite de pruebas web construida con Robot Framework y SeleniumLibrary para
+validar la aplicación de demostración
+[Space & Beyond](https://demo.testim.io/).
 
-El flujo recomendado es:
+El proyecto automatiza el recorrido principal de una reserva: validación de la
+página, inicio de sesión, selección de fechas y pasajeros, búsqueda de viajes,
+revisión de destinos, reserva y captura de los datos del viajero. Los datos,
+credenciales, valores esperados y localizadores se leen desde Excel.
 
-1. Escribir los datos en `variables/variables.xlsx`.
-2. Crear o actualizar casos en `tests/`.
-3. Reutilizar keywords de `resources/keywords.robot`.
-4. Ejecutar con `robot.args`.
-5. Revisar resultados en `results/`.
+## Cobertura actual
 
-## Estructura del repo
+La suite `tests/regresive.robot` contiene 15 casos:
+
+| Caso | Validación |
+| --- | --- |
+| TC-001 | Elementos principales de la página |
+| TC-002 | Controles del formulario de búsqueda |
+| TC-003 | Inicio de sesión con credenciales |
+| TC-004 | Saludo mostrado después del inicio de sesión |
+| TC-005 | Cancelación del formulario de inicio de sesión |
+| TC-006 | Selección de fecha de salida |
+| TC-007 | Selección de fecha de regreso posterior a la salida |
+| TC-008 | Rechazo de una fecha de regreso inválida |
+| TC-009 | Cambio de cantidad de pasajeros adultos |
+| TC-010 | Límites mínimo y máximo de pasajeros |
+| TC-011 | Búsqueda con fechas y pasajeros válidos |
+| TC-012 | Tarjetas de viajes disponibles |
+| TC-013 | Selección y reserva de un destino |
+| TC-014 | Información de la reserva seleccionada |
+| TC-015 | Flujo integral: sesión, búsqueda, destino y datos del viajero |
+
+## Tecnologías
+
+- Python 3.10 o posterior
+- Robot Framework 7
+- SeleniumLibrary y Selenium
+- openpyxl para leer los datos de prueba
+- fpdf2 para generar evidencia en PDF
+- Microsoft Edge por defecto en los datos actuales
+
+Las versiones utilizadas están fijadas en `requirements.txt`.
+
+## Estructura
 
 ```text
 tests/
-  regresive.robot          Suite principal de ejemplo
-
-resources/
-  keywords.robot           Keywords de negocio reutilizables
-  datos_excel.py           Wrapper compatible hacia libraries/excel.py
-  expandir_excel.py        Wrapper compatible hacia modifiers/expandir_excel.py
-  reportes.py              Wrapper compatible hacia libraries/reportes.py
-
-  libraries/
-    excel.py               Keywords Python explicitas para Excel
-    reportes.py            Keywords Python explicitas para evidencia
-
-  modifiers/
-    expandir_excel.py      Repite tests segun filas llenas del Excel
+  regresive.robot               Suite con los 15 casos
 
 variables/
-  variables.xlsx           Datos de entrada por caso
-  variables.py             Lector generico opcional
+  variables.xlsx               Datos y localizadores por caso
+  variables.py                 Lector alternativo del Excel
+
+resources/
+  keywords.robot               Keywords de navegador y del flujo de reservas
+  libraries/
+    excel.py                    Carga datos como variables de Robot
+    reportes.py                 Capturas y evidencia HTML/PDF
+  modifiers/
+    expandir_excel.py           Expande casos por cada fila de datos
 
 docs/
-  KEYWORDS.md              Catalogo de keywords nativas y propias
-  STRUCTURE.md             Guia de capas y organizacion
+  KEYWORDS.md                   Catálogo detallado de keywords
+  STRUCTURE.md                  Organización interna del proyecto
 
-robot.args                 Argumentos comunes de ejecucion
-requirements.txt           Dependencias Python
-results/                   Reportes generados
+robot.args                      Configuración común de ejecución
+requirements.txt                Dependencias de Python
+results/                        Resultados generados (no versionados)
 ```
 
-## Instalar
+Los módulos Python ubicados directamente en `resources/` son wrappers de
+compatibilidad. La implementación principal está en `resources/libraries/` y
+`resources/modifiers/`.
 
-Instala Python 3.10 o superior y un navegador compatible con Selenium.
+## Instalación
+
+1. Instala Python 3.10 o posterior.
+2. Instala Microsoft Edge, que es el navegador configurado actualmente en el
+   Excel. Selenium Manager se encarga de resolver el controlador compatible.
+3. Crea y activa un entorno virtual (recomendado):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+4. Instala las dependencias:
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-Para validar navegadores en Windows:
-
-```powershell
-where msedge
-where chrome
-```
-
-## Ejecutar
+## Ejecución
 
 Ejecutar toda la suite:
 
@@ -66,178 +99,126 @@ Ejecutar toda la suite:
 python -m robot --argumentfile robot.args tests/regresive.robot
 ```
 
-Validar sintaxis sin abrir navegador:
+Validar la sintaxis y la resolución de keywords sin ejecutar el navegador:
 
 ```powershell
 python -m robot --dryrun --argumentfile robot.args tests/regresive.robot
 ```
 
-Ejecutar un caso especifico:
+Ejecutar un caso por nombre:
 
 ```powershell
-python -m robot --argumentfile robot.args -t "TC-001 Validar pagina publica desde Excel" tests/regresive.robot
+python -m robot --argumentfile robot.args \
+  --test "TC-015 Completar flujo principal de reservacion" \
+  tests/regresive.robot
 ```
 
-`robot.args` ya configura:
-
-```text
---outputdir
-results
---prerunmodifier
-resources.modifiers.expandir_excel.ExpandirCasosExcel
-```
-
-El `prerunmodifier` revisa el Excel antes de ejecutar y repite cada caso por
-cada fila llena de datos.
-
-Para usar otro archivo Excel sin tocar codigo:
+También se puede filtrar por el tag asociado a la hoja:
 
 ```powershell
-python -m robot --outputdir results --prerunmodifier resources.modifiers.expandir_excel.ExpandirCasosExcel:variables/otro.xlsx tests/regresive.robot
+python -m robot --argumentfile robot.args --include TC-015 tests/regresive.robot
 ```
 
-## Capas del proyecto
+`robot.args` configura la carpeta `results/` y activa
+`ExpandirCasosExcel`. Este modificador crea una ejecución por cada fila no vacía
+de la hoja correspondiente. Por ello, un caso puede aparecer con nombres como
+`... - datos 1`, `... - datos 2`, etc.
 
-El repo queda separado en capas para que sea mas facil reutilizarlo:
+## Datos de prueba en Excel
 
-- `tests/`: solo contiene escenarios de prueba.
-- `resources/keywords.robot`: fachada legible para escribir pasos de negocio.
-- `resources/libraries/`: librerias Python con keywords declaradas
-  explicitamente con `@keyword`.
-- `resources/modifiers/`: extensiones que cambian el modelo de ejecucion de
-  Robot antes de correr.
-- `variables/`: datos de entrada por ambiente, caso o proyecto.
-- `docs/`: guias para mantener y reutilizar la plantilla.
+`variables/variables.xlsx` contiene una hoja por caso, desde `TC-001` hasta
+`TC-015`. El tag del test debe coincidir con el nombre de su hoja:
 
-Los archivos `resources/reportes.py`, `resources/datos_excel.py` y
-`resources/expandir_excel.py` se mantienen como compatibilidad para imports
-anteriores, pero el codigo recomendado vive en `resources/libraries/` y
-`resources/modifiers/`.
-
-## Flujo de Excel
-
-Cada hoja del Excel representa un caso. El nombre de la hoja debe coincidir con
-el tag del test.
-
-Ejemplo: hoja `TC-001`
-
-| url | browser | title | expected_text |
-| --- | --- | --- | --- |
-| https://www.example.com | Edge | Example Domain | Example Domain |
-| https://www.python.org | Edge | Welcome to Python.org | Python |
-
-Reglas:
-
-- La fila 1 siempre contiene encabezados.
-- Cada encabezado se convierte en variable Robot.
-- `Expected Text` se normaliza como `${expected_text}`.
-- La primera fila de datos es la fila 2 del Excel, pero internamente se usa
-  como fila de datos `1`.
-- Si una hoja tiene 2 filas llenas, el caso se ejecuta 2 veces.
-- Si una hoja tiene 1 fila llena, el caso se ejecuta 1 vez.
-- Las filas completamente vacias se ignoran.
-
-Con el ejemplo anterior, Robot genera ejecuciones separadas:
-
-```text
-TC-001 Validar pagina publica desde Excel - datos 1
-TC-001 Validar pagina publica desde Excel - datos 2
+```robot
+TC-006 Seleccionar una fecha de salida
+    [Tags]    TC-006
+    Validar texto visible    ${expected_text}
 ```
 
-Cada ejecucion carga sus variables y genera evidencia propia.
+En cada hoja:
 
-## Crear un caso
+- La primera fila contiene los encabezados.
+- Las filas siguientes contienen combinaciones de datos.
+- Los encabezados se normalizan a minúsculas y guiones bajos y se exponen como
+  variables de Robot. Por ejemplo, `Expected Text` se convierte en
+  `${expected_text}`.
+- Las filas completamente vacías se ignoran.
+- Las hojas actuales apuntan a `https://demo.testim.io/` y usan `Edge`.
 
-1. Crea una hoja en `variables/variables.xlsx`, por ejemplo `TC-002`.
-2. Agrega encabezados en la fila 1: `url`, `browser`, `expected_text`, etc.
-3. Llena una o mas filas de datos.
-4. Crea el test en `tests/regresive.robot` o en otra suite dentro de `tests/`.
-5. Agrega el tag con el mismo codigo de la hoja.
-6. Usa keywords de `resources/keywords.robot`.
+Los datos incluyen URLs, credenciales de prueba, fechas, cantidades, textos
+esperados, rutas de archivos y localizadores XPath/CSS. Si cambia la interfaz de
+la aplicación, los localizadores deben actualizarse en el Excel.
+
+Para ejecutar contra otro libro con la misma estructura:
+
+```powershell
+python -m robot --outputdir results \
+  --prerunmodifier resources.modifiers.expandir_excel.ExpandirCasosExcel:variables/otro.xlsx \
+  tests/regresive.robot
+```
+
+## Flujo interno de cada prueba
+
+1. `Preparar escenario web`, configurado como `Test Setup`, identifica el
+   `TC-XXX`, carga la fila del Excel, inicia la evidencia y abre el navegador.
+2. El caso usa las keywords de `resources/keywords.robot`.
+3. Las interacciones importantes registran pasos y capturas.
+4. `Finalizar escenario web`, configurado como `Test Teardown`, genera la
+   evidencia y cierra todos los navegadores incluso si el caso falla.
+
+Las keywords de negocio cubren, entre otras acciones:
+
+- inicio de sesión;
+- selección y comparación de fechas;
+- configuración y validación de pasajeros;
+- validación de las tarjetas de destinos;
+- selección de un viaje;
+- validación del resumen de reserva;
+- llenado del formulario final y carga de un archivo.
+
+El catálogo completo está en `docs/KEYWORDS.md`.
+
+## Resultados y evidencia
+
+Después de ejecutar se generan en `results/`:
+
+- `output.xml`: resultado procesable de Robot Framework;
+- `log.html`: detalle de pasos y errores;
+- `report.html`: resumen de la ejecución;
+- `evidencia-*.html`: evidencia individual por ejecución;
+- `evidencia-*.pdf`: versión PDF de esa evidencia;
+- archivos `.png`: capturas tomadas durante los pasos.
+
+La evidencia individual incluye el nombre del caso, estado, duración, mensaje
+de error y capturas disponibles.
+
+## Agregar o modificar un caso
+
+1. Crea o actualiza una hoja `TC-XXX` en `variables/variables.xlsx`.
+2. Define los encabezados y una o más filas de datos.
+3. Agrega el test con el mismo tag en `tests/regresive.robot`.
+4. Reutiliza las keywords de `resources/keywords.robot`.
+5. Ejecuta primero el `--dryrun` y luego la prueba real.
 
 Ejemplo:
 
 ```robot
-*** Test Cases ***
-TC-002 Buscar texto desde Excel
-    [Tags]   TC-002
-    Abrir navegador   ${url}   ${browser}
-    Validar texto visible   ${expected_text}
+TC-016 Validar nuevo comportamiento
+    [Tags]    TC-016
+    Esperar y validar elemento    ${element_locator}
+    Validar texto visible         ${expected_text}
 ```
 
-La suite debe importar el recurso y usar setup/teardown:
+## Solución de problemas
 
-```robot
-*** Settings ***
-Resource        ../resources/keywords.robot
-Test Setup      Preparar caso de prueba
-Test Teardown   Finalizar caso de prueba
-```
-
-## Keywords
-
-El catalogo completo esta en `docs/KEYWORDS.md`.
-La guia de organizacion esta en `docs/STRUCTURE.md`.
-
-Las mas usadas son:
-
-| Keyword | Uso |
-| --- | --- |
-| `Preparar caso de prueba` | Carga Excel default o un archivo indicado e inicia evidencia. |
-| `Abrir navegador` | Abre navegador y registra evidencia. |
-| `Esperar elemento visible` | Espera un elemento antes de interactuar. |
-| `Presionar elemento` | Click sobre cualquier elemento. |
-| `Introducir texto` | Escribe en un campo. |
-| `Limpiar e introducir texto` | Limpia y escribe en un campo. |
-| `Validar texto visible` | Valida texto en la pagina. |
-| `Validar elemento contiene texto` | Valida texto dentro de un elemento. |
-| `Registrar evidencia` | Agrega un paso manual al HTML/PDF. |
-| `Finalizar caso de prueba` | Cierra navegador y genera evidencia. |
-
-Tambien puedes usar directamente keywords nativas de SeleniumLibrary como
-`Click Element`, `Input Text`, `Page Should Contain`, `Title Should Be` y
-`Wait Until Element Is Visible`.
-
-## Evidencia y reportes
-
-Cada ejecucion crea archivos en `results/`:
-
-- `output.xml`: resultado tecnico de Robot Framework.
-- `log.html`: detalle completo de ejecucion.
-- `report.html`: resumen nativo de Robot Framework.
-- `evidencia-*.html`: evidencia ejecutiva por caso.
-- `evidencia-*.pdf`: evidencia ejecutiva por caso.
-- `*.png`: capturas tomadas durante la prueba.
-
-La evidencia se genera aunque el caso falle, porque `Finalizar caso de prueba`
-esta configurado como `Test Teardown`.
-
-## Agregar mas keywords
-
-Agrega wrappers nuevos en `resources/keywords.robot` cuando una accion se repita
-en varios casos o cuando quieras registrar evidencia automaticamente.
-
-Ejemplo:
-
-```robot
-Buscar texto
-    [Arguments]   ${locator}   ${texto}
-    Limpiar e introducir texto   ${locator}   ${texto}
-    Press Keys   ${locator}   ENTER
-    Registrar evidencia   Busqueda enviada: ${texto}
-```
-
-Si solo necesitas una accion una vez, puedes usar la keyword nativa directamente
-en el test.
-
-## Problemas comunes
-
-- Si no abre navegador, valida que Edge o Chrome esten instalados.
-- Si faltan variables, revisa el nombre de la hoja, el tag `TC-XXX` y los
-  encabezados del Excel.
-- Si un caso no se repite, valida que las filas tengan al menos una variable
-  llena.
-- Si no aparece el PDF, revisa `results/log.html`; el teardown registra errores
-  de evidencia.
-- Si falla una validacion, corrige los datos esperados en Excel o ajusta la
-  keyword del test.
+- **No abre el navegador:** comprueba que Edge esté instalado y accesible.
+- **Falta una variable:** revisa el encabezado, el tag del test y la hoja
+  `TC-XXX`.
+- **Se ejecuta más de una vez:** la hoja contiene varias filas no vacías y el
+  modificador genera una prueba por cada una.
+- **Falla un localizador:** actualízalo en la hoja del caso; la interfaz de la
+  aplicación pudo cambiar.
+- **No se genera el PDF:** consulta `results/log.html` para ver el error
+  registrado por el teardown.
+- **Falla la carga de archivo del TC-015:** comprueba que el valor
+  `health_file` apunte a un archivo existente y accesible.
